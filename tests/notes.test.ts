@@ -2,19 +2,19 @@ import {describe} from "mocha";
 import {expect} from "chai";
 import {ApiClient} from "../api/client";
 import {anotherUser, defaultUser} from "../config/config";
+import {faker} from "@faker-js/faker";
 
 // TODO add negative tests
 
 describe('Simple API/notes', () => {
     it('should create new note', async () => {
         const client = await ApiClient.loginAs(defaultUser);
-
+        const content = faker.lorem.sentence();
         const note = await client.note.createNote({
-            content: 'test'
+            content: content
         });
 
-        expect(note).to.be.an('object');
-        expect(note.content).to.be.equal('test');
+        expect(note.content, 'Note content does not match the initial one').to.be.equal(content);
     });
 
     it('should update note', async () => {
@@ -27,9 +27,8 @@ describe('Simple API/notes', () => {
             content: 'updated'
         });
 
-        expect(updatedNote).to.be.an('object');
-        expect(updatedNote.id).to.be.equal(note.id);
-        expect(updatedNote.content).to.be.equal('updated');
+        expect(updatedNote.id, 'Note id does not match initial note id').to.be.equal(note.id);
+        expect(updatedNote.content, 'Updated content does not match the content note was updated with').to.be.equal('updated');
     });
 
     it('should get all notes', async () => {
@@ -38,10 +37,9 @@ describe('Simple API/notes', () => {
 
         expect(notes).to.be.an('array');
         notes.forEach((note: any) => {
-            expect(note).to.be.an('object');
-            expect(note).to.haveOwnProperty('id');
-            expect(note).to.haveOwnProperty('content');
-            expect(note).to.haveOwnProperty('author');
+            expect(note, 'Note does not have id').to.haveOwnProperty('id');
+            expect(note, 'Note does not have content').to.haveOwnProperty('content');
+            expect(note, 'Note does not have author').to.haveOwnProperty('author');
         });
     });
 
@@ -53,9 +51,8 @@ describe('Simple API/notes', () => {
         const client2 = await ApiClient.unauthorized();
         const noteById = await client2.note.getNoteById(note.id);
 
-        expect(noteById).to.be.an('object');
-        expect(noteById.content).to.be.equal('testById');
-        expect(noteById.id).to.be.equal(note.id);
+        expect(noteById.content, 'Note content does not match the initial one').to.be.equal('testById');
+        expect(noteById.id, 'Note id does not match initial note id').to.be.equal(note.id);
     });
 
     it('should get notes by author id', async () => {
@@ -66,8 +63,8 @@ describe('Simple API/notes', () => {
         const notesByAuthorId = await client.note.getNotesByAuthorId(note.author);
 
         expect(notesByAuthorId).to.be.an('array');
-        notesByAuthorId.forEach((note: any) => {
-            expect(note.author).to.be.equal(note.author);
+        notesByAuthorId.forEach((el: any) => {
+            expect(el.author, 'Author id does not match the requested one').to.be.equal(note.author);
         });
     });
 
@@ -80,7 +77,7 @@ describe('Simple API/notes', () => {
 
         const allNotes = await client.note.getAllNotes();
         allNotes.forEach((note: any) => {
-            expect(note.id).not.to.be.equal(noteById.id);
+            expect(note.id, 'Note was not deleted').not.to.be.equal(noteById.id);
         });
     });
 

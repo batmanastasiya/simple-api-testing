@@ -10,11 +10,10 @@ describe('Simple API/users', () => {
         const username = faker.internet.userName();
         const user = await client.user.createUser({ username })
 
-        expect(user.user).to.haveOwnProperty('id');
-        expect(user.user).not.to.haveOwnProperty('password');
-        expect(user).to.haveOwnProperty('accessToken');
-        // expect(user.user.name).to.be.equal(name);
-        expect(user.user.username).to.be.equal(username);
+        expect(user.user, 'User does not have an id property').to.haveOwnProperty('id');
+        expect(user.user, 'User does not have a password property').not.to.haveOwnProperty('password');
+        expect(user, 'User does not have an accessToken property').to.haveOwnProperty('accessToken');
+        expect(user.user.username, 'Username dos not match username user was created with').to.be.equal(username);
     });
 
     it('should get all users', async () => {
@@ -22,7 +21,7 @@ describe('Simple API/users', () => {
         const users = await client.user.getAllUsers()
 
         expect(users).to.be.an('array')
-        expect(users.length).to.be.greaterThan(0)
+        expect(users.length, 'There are no users').to.be.greaterThan(0)
     });
 
     it('should get user by id', async () => {
@@ -35,8 +34,8 @@ describe('Simple API/users', () => {
 
         const userById = await client.user.getUserById(userId)
 
-        expect(userById.id).to.be.equal(userId)
-        expect(userById.username).to.be.equal(username)
+        expect(userById.id, 'Got user with another id').to.be.equal(userId)
+        expect(userById.username, 'Username dos not match username user was created with').to.be.equal(username)
     });
 
     it('should not register user with taken username', async () => {

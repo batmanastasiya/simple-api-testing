@@ -26,12 +26,9 @@ describe('Simple API/users', () => {
 
     it('should get user by id', async () => {
         const client = await ApiClient.unauthorized()
-
         const username = faker.internet.userName();
-
         const user = await client.user.createUser({ username })
         const userId = user.user.id
-
         const userById = await client.user.getUserById(userId)
 
         expect(userById.id, 'Got user with another id').to.be.equal(userId)

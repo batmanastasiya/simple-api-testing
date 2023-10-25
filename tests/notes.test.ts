@@ -22,7 +22,6 @@ describe('Simple API/notes', () => {
         const note = await client.note.createNote({
             content: 'test'
         });
-
         const updatedNote = await client.note.updateNoteById(note.id, {
             content: 'updated'
         });
@@ -74,8 +73,8 @@ describe('Simple API/notes', () => {
             content: 'testDeleteById'
         });
         const noteById = await client.note.deleteNoteById(note.id);
-
         const allNotes = await client.note.getAllNotes();
+
         allNotes.forEach((note: any) => {
             expect(note.id, 'Note was not deleted').not.to.be.equal(noteById.id);
         });
@@ -86,9 +85,7 @@ describe('Simple API/notes', () => {
         const note = await user1.note.createNote({
             content: 'test delete note by not owner'
         });
-
         const user2 = await ApiClient.loginAs(anotherUser);
-
         const noteById = await user2.note.deleteNoteById(note.id);
 
         expect(noteById).to.haveOwnProperty('error');

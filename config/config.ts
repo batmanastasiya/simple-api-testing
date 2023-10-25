@@ -6,6 +6,6 @@ export const defaultUser = {
 }
 
 export const anotherUser = {
-    username: 'test',
-    password: 'password'
+    username: CONFIG.ANOTHER_USER_USERNAME,
+    password: CONFIG.ANOTHER_USER_PASSWORD
 }

@@ -19,4 +19,10 @@ export const CONFIG = cleanEnv(process.env, {
     SIMPLEAPI_PASSWORD: str({
         desc: 'SimpleAPI password'
     }),
+    ANOTHER_USER_USERNAME: str({
+        desc: 'Another user username'
+    }),
+    ANOTHER_USER_PASSWORD: str({
+        desc: 'Another user password'
+    }),
 });

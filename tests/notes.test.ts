@@ -1,7 +1,7 @@
 import {describe} from "mocha";
 import {expect} from "chai";
 import {ApiClient} from "../api/client";
-import {defaultUser} from "../config/config";
+import {anotherUser, defaultUser} from "../config/config";
 
 // TODO add negative tests
 
@@ -82,5 +82,20 @@ describe('Simple API/notes', () => {
         allNotes.forEach((note: any) => {
             expect(note.id).not.to.be.equal(noteById.id);
         });
+    });
+
+    it('should not delete note created by another user', async () => {
+        const user1 = await ApiClient.loginAs(defaultUser);
+        const note = await user1.note.createNote({
+            content: 'test delete note by not owner'
+        });
+
+        const user2 = await ApiClient.loginAs(anotherUser);
+
+        const noteById = await user2.note.deleteNoteById(note.id);
+
+        expect(noteById).to.haveOwnProperty('error');
+        expect(noteById.error).to.be.equal('Forbidden');
+        expect(noteById.message).to.be.equal('You are not the author of this note.');
     });
 });

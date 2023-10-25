@@ -4,16 +4,6 @@ import {APISchemaValidator} from "./validator";
 
 const defaultValidator = new APISchemaValidator();
 
-axios.interceptors.response.use(async function (response) {
-    const {status, config:{method}, request:{path}} = response;
-    const schema = await defaultValidator.getApiSchema(path, method as string, `${status}`);
-    // console.log(path, method, status, schema)
-    defaultValidator.validate(schema, response.data);
-    return response;
-}, function (error) {
-    return Promise.reject(error);
-});
-
 export class JsonRequest {
     protected options: any = {}
     public url(url: string | URL): this {
@@ -33,7 +23,28 @@ export class JsonRequest {
         return this
     }
     public async send(): Promise<any>{
-        return axios.request(this.options);
-}
+        return axios.request(this.options)
+            .then(async (response) => {
+                await this.validateResponseSchema(response);
+                return response;
+            })
+            .catch(async (error) => {
+                if (error.response.data.statusCode < 500) {
+                    await this.validateResponseSchema(error.response);
+                    //console.log('error status: ', error.response.data, error.request.path)
+
+                    return error.response
+                }
+
+               return Promise.reject(error);
+            });
+    }
+    private async validateResponseSchema(response: any) {
+        const {status, config:{method}, request:{path}} = response;
+        const schema = await defaultValidator.getApiSchema(path, method as string, `${status}`);
+        //console.log(path, method, status)
+        defaultValidator.validate(schema, response.data);
+        //console.log('schema validated', path)
+    }
 
 }

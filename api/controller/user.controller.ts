@@ -4,12 +4,12 @@ import {BaseController} from "./base.controller";
 
 export class UserController extends BaseController {
 
-    async createUser(initialCredentials: { name: string, username: string }) {
+    async createUser(initialCredentials: { username: string }) {
         const response = await new JsonRequest()
             .url(`${this.url}/auth/registration`)
             .method('POST')
             .data({
-                name: initialCredentials.name,
+                name: 'defaultName',
                 username: initialCredentials.username,
                 password1: 'password',
                 password2: 'password'

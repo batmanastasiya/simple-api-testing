@@ -17,13 +17,12 @@ export class APISchemaValidator {
     }
 
     async getApiSchema(path: string, method: string, status: string) {
+
+        const userErrorStatuses = ['400', '401', '403', '404', '409', '422'];
         try {
             const apiSpec = await this.loadAPISpec()
             //console.log(path, method, status)
             //console.log('APISPEC: '+ JSON.stringify(apiSpec, null, 2))
-
-            // TODO add one more kostyl for negative tests (400ish, 500ish)
-
 
             const splittedPath = path.split('/');
             const filteredPath = splittedPath.map((pathPart) => {
@@ -36,6 +35,9 @@ export class APISchemaValidator {
             //console.log('correctedPath: ', correctedPath)
 
             if (method === 'delete') {
+                return apiSpec?.paths?.[correctedPath]?.[method]?.responses?.[status] as any
+            }
+            if (userErrorStatuses.includes(status)) {
                 return apiSpec?.paths?.[correctedPath]?.[method]?.responses?.[status] as any
             }
             // @ts-ignore
